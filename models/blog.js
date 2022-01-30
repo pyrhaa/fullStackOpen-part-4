@@ -1,10 +1,4 @@
 const mongoose = require('mongoose');
-const config = require('./utils/config');
-const logger = require('./utils/logger');
-
-const url = config.MONGODB_URI;
-
-logger.info('connecting to', url);
 
 const blogSchema = new mongoose.Schema({
   title: String,
