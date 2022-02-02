@@ -42,9 +42,13 @@ const favoriteBlog = (blogs) => {
     prev.likes > current.likes ? prev : current
   );
 
-  const formatReturn = {};
+  const formatReturn = {
+    title: mostLikedBlog.title,
+    author: mostLikedBlog.author,
+    likes: mostLikedBlog.likes
+  };
 
-  return mostLikedBlog;
+  return formatReturn;
 };
 
 console.log(favoriteBlog(test));
