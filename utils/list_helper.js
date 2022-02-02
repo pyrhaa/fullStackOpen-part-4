@@ -9,17 +9,21 @@ const totalLikes = (blogs) => {
 };
 
 const favoriteBlog = (blogs) => {
-  const mostLikedBlog = blogs.reduce((prev, current) =>
-    prev.likes > current.likes ? prev : current
-  );
+  if (blogs.length === 0) {
+    return 'No Blog, the is empty';
+  } else {
+    const mostLikedBlog = blogs.reduce((prev, current) =>
+      prev.likes > current.likes ? prev : current
+    );
 
-  const formatReturn = {
-    title: mostLikedBlog.title,
-    author: mostLikedBlog.author,
-    likes: mostLikedBlog.likes
-  };
+    const formatReturn = {
+      title: mostLikedBlog.title,
+      author: mostLikedBlog.author,
+      likes: mostLikedBlog.likes
+    };
 
-  return formatReturn;
+    return formatReturn;
+  }
 };
 
 module.exports = {
