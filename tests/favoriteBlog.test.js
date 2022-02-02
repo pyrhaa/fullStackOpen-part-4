@@ -1,5 +1,4 @@
-const { TestWatcher } = require('jest');
-const list_helper = require('../utils/list_helper');
+const listHelper = require('../utils/list_helper');
 
 describe('favorite blog', () => {
   const listWithOneBlog = [
@@ -21,6 +20,6 @@ describe('favorite blog', () => {
 
   test('when list has only one blog, equals the favorite blog', () => {
     const result = listHelper.favoriteBlog(listWithOneBlog);
-    expect(result).toBe(favorite);
+    expect(result).toEqual(favorite);
   });
 });
