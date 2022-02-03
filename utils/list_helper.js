@@ -80,7 +80,12 @@ const test = [
   }
 ];
 
-const mostBlog = (blogs) => {};
+const mostBlog = (blogs) => {
+  const order = _.groupBy(blogs, 'author');
+  const howMany = order;
+
+  return howMany;
+};
 
 console.log(mostBlog(test));
 
