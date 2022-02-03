@@ -82,9 +82,20 @@ const test = [
 
 const mostBlog = (blogs) => {
   const order = _.groupBy(blogs, 'author');
-  const howMany = order;
+  const howMany = _.reduce(
+    order,
+    (prev, current) => {
+      return prev > current ? prev : current;
+    },
+    {}
+  );
 
-  return howMany;
+  const formatReturn = {
+    author: howMany[0].author,
+    blogs: howMany.length
+  };
+
+  return formatReturn;
 };
 
 console.log(mostBlog(test));
