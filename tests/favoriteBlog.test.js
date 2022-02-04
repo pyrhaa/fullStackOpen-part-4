@@ -27,11 +27,11 @@ describe('favorite blog', () => {
 describe('favorite blog', () => {
   const emptyList = [];
 
-  const favorite = 'No Blog, the is empty';
+  const favorite = 'No Blog, this is empty';
 
   test('when list is empty, equals the favorite blog', () => {
     const result = listHelper.favoriteBlog(emptyList);
-    expect(result).toEqual(favorite);
+    expect(result).toBe(favorite);
   });
 });
 

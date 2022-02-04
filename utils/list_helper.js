@@ -12,7 +12,7 @@ const totalLikes = (blogs) => {
 
 const favoriteBlog = (blogs) => {
   if (blogs.length === 0) {
-    return 'No Blog, the is empty';
+    return 'No Blog, this is empty';
   } else {
     const mostLikedBlog = blogs.reduce((prev, current) =>
       prev.likes > current.likes ? prev : current
@@ -81,21 +81,25 @@ const favoriteBlog = (blogs) => {
 // ];
 
 const mostBlog = (blogs) => {
-  const order = _.groupBy(blogs, 'author');
-  const howMany = _.reduce(
-    order,
-    (prev, current) => {
-      return prev > current ? prev : current;
-    },
-    {}
-  );
+  if (_.size(blogs) === 0) {
+    return 'No Blog, this is empty';
+  } else {
+    const order = _.groupBy(blogs, 'author');
+    const howMany = _.reduce(
+      order,
+      (prev, current) => {
+        return prev > current ? prev : current;
+      },
+      {}
+    );
 
-  const formatReturn = {
-    author: howMany[0].author,
-    blogs: howMany.length
-  };
+    const formatReturn = {
+      author: howMany[0].author,
+      blogs: howMany.length
+    };
 
-  return formatReturn;
+    return formatReturn;
+  }
 };
 
 module.exports = {
