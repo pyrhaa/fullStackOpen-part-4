@@ -19,7 +19,7 @@ describe('when there is initially some blogs saved', () => {
       .expect('Content-Type', /application\/json/);
   }, 100000);
 
-  test('all blogs are returned', () => {
+  test('all blogs are returned', async () => {
     const blogsAtEnd = await helper.blogsInDb();
     expect(blogsAtEnd).toHaveLength(initialBlogs.length);
   });
