@@ -11,52 +11,68 @@ beforeEach(async () => {
   await Blog.insertMany(initialBlogs);
 });
 
-test('blogs are returned as json', async () => {
-  await api
-    .get('/api/blogs')
-    .expect(200)
-    .expect('Content-Type', /application\/json/);
-}, 100000);
+describe('when there is initially some blogs saved', () => {
+  test('blogs are returned as json', async () => {
+    await api
+      .get('/api/blogs')
+      .expect(200)
+      .expect('Content-Type', /application\/json/);
+  }, 100000);
 
-test('identifier property of the blogs is named id', async () => {
-  const res = await api.get('/api/blogs');
-  expect(res.body[0].id).toBeDefined();
-  expect(res.body[0]._id).toBe(undefined);
+  test('all blogs are returned', () => {
+    const blogsAtEnd = await helper.blogsInDb();
+    expect(blogsAtEnd).toHaveLength(initialBlogs.length);
+  });
+
+  test('the first note is about React', async () => {
+    const blogsAtEnd = await helper.blogsInDb();
+    expect(blogsAtEnd[0].title).toBe('React patterns');
+  });
 });
 
-test('a valid blog can be added', async () => {
-  const newBlog = {
-    title: 'Blog test',
-    author: 'Tutti Fruitti',
-    url: 'https://reactpatterns.com/',
-    likes: 9
-  };
-
-  await api
-    .post('/api/blogs')
-    .send(newBlog)
-    .expect(201)
-    .expect('Content-Type', /application\/json/);
-
-  const blogsAtEnd = await helper.blogsInDb();
-  expect(blogsAtEnd).toHaveLength(initialBlogs.length + 1);
-
-  const titles = blogsAtEnd.map((r) => r.title);
-  expect(titles).toContain('Blog test');
+describe('viewing a specific blog', () => {
+  test('identifier property of the blogs is named id', async () => {
+    const res = await api.get('/api/blogs');
+    expect(res.body[0].id).toBeDefined();
+    expect(res.body[0]._id).toBe(undefined);
+  });
 });
 
-test('blog without author is not added', async () => {
-  const newBlog = {
-    title: 'No Author',
-    url: 'https://dontclick.com',
-    likes: 1
-  };
+describe('addition of a new blog', () => {
+  test('a valid blog can be added', async () => {
+    const newBlog = {
+      title: 'Blog test',
+      author: 'Tutti Fruitti',
+      url: 'https://reactpatterns.com/',
+      likes: 9
+    };
 
-  await api.post('/api/blogs').send(newBlog).expect(400);
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/);
 
-  const blogsAtEnd = await helper.blogsInDb();
+    const blogsAtEnd = await helper.blogsInDb();
+    expect(blogsAtEnd).toHaveLength(initialBlogs.length + 1);
 
-  expect(blogsAtEnd).toHaveLength(initialBlogs.length);
+    const titles = blogsAtEnd.map((r) => r.title);
+    expect(titles).toContain('Blog test');
+  });
+
+  test('blog without author is not added', async () => {
+    const newBlog = {
+      title: 'No Author',
+      url: 'https://dontclick.com',
+      likes: 1
+    };
+
+    await api.post('/api/blogs').send(newBlog).expect(400);
+
+    const blogsAtEnd = await helper.blogsInDb();
+
+    expect(blogsAtEnd).toHaveLength(initialBlogs.length);
+  });
 });
 
 afterAll(() => {
