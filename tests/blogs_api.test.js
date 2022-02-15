@@ -60,6 +60,38 @@ describe('addition of a new blog', () => {
     expect(titles).toContain('Blog test');
   });
 
+  test('blog without likes will default value 0', async () => {
+    const newBlog = {
+      author: 'Kawkaw',
+      title: 'No Author',
+      url: 'https://dontclick.com'
+    };
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/);
+
+    const blogsAtEnd = await helper.blogsInDb();
+    expect(blogsAtEnd).toHaveLength(initialBlogs.length + 1);
+
+    const likes = blogsAtEnd.map((r) => r.likes);
+    expect(likes[likes.length - 1]).toBe(0);
+  });
+
+  test('blog without title and url is not added', async () => {
+    const newBlog = {
+      author: 'Kawkaw',
+      likes: 1
+    };
+
+    await api.post('/api/blogs').send(newBlog).expect(400);
+
+    const blogsAtEnd = await helper.blogsInDb();
+    expect(blogsAtEnd).toHaveLength(initialBlogs.length);
+  });
+
   test('blog without author is not added', async () => {
     const newBlog = {
       title: 'No Author',
@@ -70,7 +102,6 @@ describe('addition of a new blog', () => {
     await api.post('/api/blogs').send(newBlog).expect(400);
 
     const blogsAtEnd = await helper.blogsInDb();
-
     expect(blogsAtEnd).toHaveLength(initialBlogs.length);
   });
 });
