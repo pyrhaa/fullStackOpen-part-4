@@ -121,6 +121,38 @@ describe('delete a blog', () => {
   });
 });
 
+describe('update a blog', () => {
+  test('a blog likes can be updated', async () => {
+    const blogsAtStart = await helper.blogsInDb();
+    const blogToUpdate = blogsAtStart[0].likes;
+    const newLikes = 9;
+
+    await api.put(`/api/blogs/${blogToUpdate.id}`).expect(200);
+
+    const blogsAtEnd = await helper.blogsInDb();
+    expect(blogsAtEnd).toHaveLength(initialBlogs.length);
+    expect(blogToUpdate).toBe(newLikes);
+  });
+
+  test('a blog can be updated', async () => {
+    const blogsAtStart = await helper.blogsInDb();
+    const blogToUpdate = blogsAtStart[0];
+    const newBlogUpdated = {
+      title: 'Postman try',
+      author: 'Robert C. Martin',
+      url: 'http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html',
+      likes: 1
+    };
+
+    await api.put(`/api/blogs/${blogToUpdate.id}`).expect(200);
+
+    const blogsAtEnd = await helper.blogsInDb();
+    const blogUpdated = blogsAtEnd[0];
+    expect(blogsAtEnd).toHaveLength(initialBlogs.length);
+    expect(blogUpdated).toEqual(newBlogUpdated);
+  });
+});
+
 afterAll(() => {
   mongoose.connection.close();
 });
