@@ -124,32 +124,32 @@ describe('delete a blog', () => {
 describe('update a blog', () => {
   test('a blog likes can be updated', async () => {
     const blogsAtStart = await helper.blogsInDb();
-    const blogToUpdate = blogsAtStart[0].likes;
-    const newLikes = 9;
+    const blogToUpdate = blogsAtStart[0];
 
-    await api.put(`/api/blogs/${blogToUpdate.id}`).expect(200);
+    await api
+      .put(`/api/blogs/${blogToUpdate.id}`)
+      .send({ likes: 9 })
+      .expect(200);
 
     const blogsAtEnd = await helper.blogsInDb();
-    expect(blogsAtEnd).toHaveLength(initialBlogs.length);
-    expect(blogToUpdate).toBe(newLikes);
+    expect(blogsAtEnd[0]).toHaveProperty('likes', 9);
   });
 
   test('a blog can be updated', async () => {
     const blogsAtStart = await helper.blogsInDb();
     const blogToUpdate = blogsAtStart[0];
-    const newBlogUpdated = {
+    const updateBlog = {
       title: 'Postman try',
       author: 'Robert C. Martin',
       url: 'http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html',
       likes: 1
     };
 
-    await api.put(`/api/blogs/${blogToUpdate.id}`).expect(200);
+    await api.put(`/api/blogs/${blogToUpdate.id}`).send(updateBlog).expect(200);
 
     const blogsAtEnd = await helper.blogsInDb();
-    const blogUpdated = blogsAtEnd[0];
     expect(blogsAtEnd).toHaveLength(initialBlogs.length);
-    expect(blogUpdated).toEqual(newBlogUpdated);
+    expect(blogsAtEnd[0]).toEqual(expect.objectContaining(updateBlog));
   });
 });
 
