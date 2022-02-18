@@ -73,10 +73,60 @@ describe('when there is initially one user in db', () => {
       password: 'salainen'
     };
 
-    await api.post('/api/users').send(newUser).expect(400);
+    const result = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/);
+
+    expect(result.body.error).toContain(
+      'username must have at least 3 characters'
+    );
 
     const usersAtEnd = await helper.usersInDb();
-    expect(usersAtEnd).toHaveLength(usersAtStart.length);
+    expect(usersAtEnd).toEqual(usersAtStart);
+  });
+
+  test('creation fails if password have under 3 characters', async () => {
+    const usersAtStart = await helper.usersInDb();
+
+    const newUser = {
+      username: 'rootiti',
+      name: 'Superuser',
+      password: 'te'
+    };
+
+    const result = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/);
+
+    expect(result.body.error).toContain(
+      'password must have at least 3 characters'
+    );
+
+    const usersAtEnd = await helper.usersInDb();
+    expect(usersAtEnd).toEqual(usersAtStart);
+  });
+
+  test('creation fails if username & password are missing', async () => {
+    const usersAtStart = await helper.usersInDb();
+
+    const newUser = {
+      name: 'Superuser'
+    };
+
+    const result = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/);
+
+    expect(result.body.error).toContain('username AND password are required');
+
+    const usersAtEnd = await helper.usersInDb();
+    expect(usersAtEnd).toEqual(usersAtStart);
   });
 });
 

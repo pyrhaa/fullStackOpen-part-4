@@ -17,16 +17,22 @@ usersRouter.post('/', async (req, res) => {
     });
   }
 
-  if (username.length < 3) {
+  if (!username || !password) {
+    return res
+      .status(400)
+      .json({ error: 'username AND password are required' });
+  }
+
+  if (username.length < 3 || username === ' ') {
     return res
       .status(400)
       .json({ error: 'username must have at least 3 characters' });
   }
 
-  if (password.length < 3) {
+  if (password.length < 3 || password === ' ') {
     return res
       .status(400)
-      .send({ error: 'password must have at least 3 characters' });
+      .json({ error: 'password must have at least 3 characters' });
   }
 
   const saltRounds = 10;
