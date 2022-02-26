@@ -33,5 +33,6 @@ const tokenExtractor = (req, res, next) => {
 
 module.exports = {
   unknownEndpoint,
-  errorHandler
+  errorHandler,
+  tokenExtractor
 };

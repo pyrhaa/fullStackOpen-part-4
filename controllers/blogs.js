@@ -78,9 +78,24 @@ blogsRouter.put('/:id', async (req, res, next) => {
 });
 
 blogsRouter.delete('/:id', async (req, res, next) => {
+  const token = req.token;
+  const decodedToken = jwt.verify(token, process.env.SECRET);
+
+  if (!decodedToken.id) {
+    return res.status(401).json({ error: 'token missing or invalid' });
+  }
+
+  const id = req.params.id;
+  const blog = await Blog.findById(id);
   try {
-    await Blog.findByIdAndRemove(req.params.id);
-    res.status(204).end();
+    if (blog.user.toString() === decodedToken.id) {
+      await Blog.findByIdAndRemove(req.params.id);
+      res.status(204).end();
+    } else {
+      return res.status(401).json({
+        error: 'Unauthorized to access blog, fail to remove'
+      });
+    }
   } catch (error) {
     next(error);
   }
