@@ -33,7 +33,7 @@ blogsRouter.post('/', async (req, res) => {
   }
   try {
     const body = req.body;
-    const user = await User.findById(decodedToken.id);
+    const user = req.user;
 
     const blog = new Blog({
       title: body.title,
@@ -82,8 +82,9 @@ blogsRouter.delete('/:id', async (req, res) => {
   try {
     const id = req.params.id;
     const blog = await Blog.findById(id);
-    if (blog.user.toString() === decodedToken.id) {
-      await Blog.findByIdAndRemove(req.params.id);
+    const user = req.user;
+    if (blog.user.toString() === user.id.toString()) {
+      await Blog.findByIdAndRemove(id);
       res.status(204).end();
     } else {
       return res.status(401).json({
