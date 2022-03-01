@@ -136,8 +136,10 @@ describe('addition of a new blog', () => {
 
 describe('delete a blog', () => {
   let token = null;
-  beforeAll(async () => {
+  beforeEach(async () => {
     await User.deleteMany({});
+    await Blog.deleteMany({});
+
     const user = await new User({
       username: 'User1',
       passwordHash: await bcrypt.hash('user1', 10)

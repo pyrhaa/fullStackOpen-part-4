@@ -34,20 +34,17 @@ const tokenExtractor = (req, res, next) => {
 };
 
 const userExtractor = async (req, res, next) => {
-  const authorization = req.get('authorization');
-
-  const decodedToken = jwt.verify(
-    authorization.substring(7),
-    process.env.SECRET
-  );
-  const user = await User.findById(decodedToken.id);
-
-  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
-    req.user = user;
-    return next();
+  if (req.token) {
+    const decodedToken = jwt.verify(req.token, process.env.SECRET);
+    if (decodedToken.id) {
+      req.user = await User.findById(decodedToken.id);
+    } else {
+      req.user = null;
+    }
+  } else {
+    req.user = null;
   }
-  req.user = null;
-  return next();
+  next();
 };
 
 module.exports = {
