@@ -50,7 +50,7 @@ describe('addition of a new blog', () => {
     const user = await new User({
       username: 'User1',
       passwordHash: await bcrypt.hash('user1', 10)
-    });
+    }).save();
 
     const log = { username: 'User1', id: user.id };
     token = jwt.sign(log, process.env.SECRET);
