@@ -47,15 +47,15 @@ describe('addition of a new blog', () => {
   let token = null;
   beforeAll(async () => {
     await User.deleteMany({});
-  });
+    const user = await new User({
+      username: 'User1',
+      passwordHash: await bcrypt.hash('user1', 10)
+    });
 
-  const user = await new User({
-    username: 'User1',
-    passwordHash: await bcrypt.hash('user1', 10)
+    const log = { username: 'User1', id: user.id };
+    token = jwt.sign(log, process.env.SECRET);
+    return token;
   });
-
-  const log = { username: 'User1', id: user.id };
-  token = jwt.sign(log, process.env.SECRET);
 
   test('a valid blog can be added', async () => {
     const newBlog = {
@@ -67,6 +67,7 @@ describe('addition of a new blog', () => {
 
     await api
       .post('/api/blogs')
+      .set('Authorization', `Bearer ${token}`)
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/);
@@ -87,6 +88,7 @@ describe('addition of a new blog', () => {
 
     await api
       .post('/api/blogs')
+      .set('Authorization', `Bearer ${token}`)
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/);
@@ -104,7 +106,11 @@ describe('addition of a new blog', () => {
       likes: 1
     };
 
-    await api.post('/api/blogs').send(newBlog).expect(400);
+    await api
+      .post('/api/blogs')
+      .set('Authorization', `Bearer ${token}`)
+      .send(newBlog)
+      .expect(400);
 
     const blogsAtEnd = await helper.blogsInDb();
     expect(blogsAtEnd).toHaveLength(initialBlogs.length);
@@ -117,7 +123,11 @@ describe('addition of a new blog', () => {
       likes: 1
     };
 
-    await api.post('/api/blogs').send(newBlog).expect(400);
+    await api
+      .post('/api/blogs')
+      .set('Authorization', `Bearer ${token}`)
+      .send(newBlog)
+      .expect(400);
 
     const blogsAtEnd = await helper.blogsInDb();
     expect(blogsAtEnd).toHaveLength(initialBlogs.length);

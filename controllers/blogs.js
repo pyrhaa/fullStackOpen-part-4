@@ -47,7 +47,7 @@ blogsRouter.post('/', async (req, res) => {
     await user.save();
     res.status(201).json(savedBlog);
   } catch (error) {
-    response.status(400).end();
+    res.status(400).end();
   }
 });
 
