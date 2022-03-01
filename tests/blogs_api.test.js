@@ -4,6 +4,7 @@ const helper = require('./test_helper');
 const app = require('../app');
 const api = supertest(app);
 const Blog = require('../models/blog');
+const User = require('../models/user');
 const initialBlogs = helper.initialBlogs;
 const jwt = require('jsonwebtoken');
 
@@ -20,7 +21,7 @@ describe('when there is initially some blogs saved', () => {
       .get('/api/blogs')
       .expect(200)
       .expect('Content-Type', /application\/json/);
-  }, 100000);
+  });
 
   test('all blogs are returned', async () => {
     const blogsAtEnd = await helper.blogsInDb();
@@ -42,6 +43,10 @@ describe('viewing a specific blog', () => {
 });
 
 describe('addition of a new blog', () => {
+  let token = null;
+  beforeAll(async () => {
+    await User.deleteMany({});
+  });
   test('a valid blog can be added', async () => {
     const newBlog = {
       title: 'Blog test',
