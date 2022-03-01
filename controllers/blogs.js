@@ -91,7 +91,7 @@ blogsRouter.delete('/:id', async (req, res) => {
       });
     }
   } catch (error) {
-    response.status(400).end();
+    res.status(400).end();
   }
 });
 

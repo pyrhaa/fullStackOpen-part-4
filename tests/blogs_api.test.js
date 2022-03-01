@@ -135,14 +135,43 @@ describe('addition of a new blog', () => {
 });
 
 describe('delete a blog', () => {
+  let token = null;
+  beforeAll(async () => {
+    await User.deleteMany({});
+    const user = await new User({
+      username: 'User1',
+      passwordHash: await bcrypt.hash('user1', 10)
+    }).save();
+
+    const log = { username: 'User1', id: user.id };
+    token = jwt.sign(log, process.env.SECRET);
+
+    const addBlog = {
+      title: 'Add blog',
+      author: 'User1',
+      url: 'http://user1Blog.fr'
+    };
+
+    await api
+      .post('/api/blogs')
+      .set('Authorization', `Bearer ${token}`)
+      .send(addBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/);
+
+    return token;
+  });
   test('a blog can be deleted', async () => {
     const blogsAtStart = await helper.blogsInDb();
     const blogToDelete = blogsAtStart[0];
 
-    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(204);
 
     const blogsAtEnd = await helper.blogsInDb();
-    expect(blogsAtEnd).toHaveLength(initialBlogs.length - 1);
+    expect(blogsAtEnd).toHaveLength(0);
 
     const titles = blogsAtEnd.map((r) => r.title);
     expect(titles).not.toContain(blogToDelete.titles);
