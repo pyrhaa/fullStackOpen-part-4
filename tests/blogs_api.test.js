@@ -150,12 +150,25 @@ describe('delete a blog', () => {
 });
 
 describe('update a blog', () => {
+  let token = null;
+  beforeAll(async () => {
+    await User.deleteMany({});
+    const user = await new User({
+      username: 'User1',
+      passwordHash: await bcrypt.hash('user1', 10)
+    }).save();
+
+    const log = { username: 'User1', id: user.id };
+    token = jwt.sign(log, process.env.SECRET);
+    return token;
+  });
   test('a blog likes can be updated', async () => {
     const blogsAtStart = await helper.blogsInDb();
     const blogToUpdate = blogsAtStart[0];
 
     await api
       .put(`/api/blogs/${blogToUpdate.id}`)
+      .set('Authorization', `Bearer ${token}`)
       .send({ likes: 9 })
       .expect(200);
 
@@ -173,7 +186,11 @@ describe('update a blog', () => {
       likes: 1
     };
 
-    await api.put(`/api/blogs/${blogToUpdate.id}`).send(updateBlog).expect(200);
+    await api
+      .put(`/api/blogs/${blogToUpdate.id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send(updateBlog)
+      .expect(200);
 
     const blogsAtEnd = await helper.blogsInDb();
     expect(blogsAtEnd).toHaveLength(initialBlogs.length);
