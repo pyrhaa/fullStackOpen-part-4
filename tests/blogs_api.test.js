@@ -7,6 +7,7 @@ const Blog = require('../models/blog');
 const User = require('../models/user');
 const initialBlogs = helper.initialBlogs;
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 
 beforeEach(async () => {
   await Blog.deleteMany({});
@@ -47,6 +48,15 @@ describe('addition of a new blog', () => {
   beforeAll(async () => {
     await User.deleteMany({});
   });
+
+  const user = await new User({
+    username: 'User1',
+    passwordHash: await bcrypt.hash('user1', 10)
+  });
+
+  const log = { username: 'User1', id: user.id };
+  token = jwt.sign(log, process.env.SECRET);
+
   test('a valid blog can be added', async () => {
     const newBlog = {
       title: 'Blog test',
